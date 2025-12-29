@@ -25,13 +25,12 @@ pipeline {
         stage('Deliver') {
             agent {
                 docker {
-                    // 注意：你之前用了 python2 的镜像，如果代码是 python3 的，建议换成 python3 版
+                    // 如果你的代码是 Python 3，确保使用 python3 标签
                     image 'cdrx/pyinstaller-linux:python3' 
                 }
             }
             steps {
-                // 在这个特定容器里安装并运行 pyinstaller
-                sh 'pip install pyinstaller'
+                // 直接运行，跳过 pip install
                 sh 'pyinstaller --onefile sources/add2vals.py'
             }
             post {
