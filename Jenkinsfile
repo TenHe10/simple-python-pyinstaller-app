@@ -26,20 +26,29 @@ pipeline {
                 }
             }
         }
-        stage('Deliver') {
-            agent {
-                docker {
-                    image 'cdrx/pyinstaller-linux:python2'
+        stages {
+            stage('Install Dependencies') {
+                steps {
+                    // 在构建之前先安装 pyinstaller
+                    sh 'pip install pyinstaller'
                 }
             }
-            steps {
-                sh 'pyinstaller --onefile sources/add2vals.py'
-            }
-            post {
-                success {
-                    archiveArtifacts 'dist/add2vals'
+            stage('Deliver') {
+                agent {
+                    docker {
+                        image 'cdrx/pyinstaller-linux:python2'
+                    }
+                }
+                steps {
+                    sh 'pyinstaller --onefile sources/add2vals.py'
+                }
+                post {
+                    success {
+                        archiveArtifacts 'dist/add2vals'
+                    }
                 }
             }
         }
+        
     }
 }
