@@ -25,16 +25,20 @@ pipeline {
         stage('Deliver') {
             agent {
                 docker {
-                    // 如果你的代码是 Python 3，确保使用 python3 标签
-                    image 'cdrx/pyinstaller-linux:python3' 
+                    image 'python:3.9' // 使用官方镜像，环境更透明
                 }
             }
             steps {
-                // 直接运行，跳过 pip install
-                sh 'pyinstaller --onefile sources/add2vals.py'
+                // 1. 更新 pip 并安装 pyinstaller
+                sh 'pip install --upgrade pip'
+                sh 'pip install pyinstaller'
+                
+                // 2. 使用 python -m 方式调用，避免 PATH 找不到命令的问题
+                sh 'python -m PyInstaller --onefile sources/add2vals.py'
             }
             post {
                 success {
+                    // 确认文件存在再归档
                     archiveArtifacts 'dist/add2vals'
                 }
             }
